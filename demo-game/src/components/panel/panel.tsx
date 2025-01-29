@@ -1,7 +1,11 @@
-export const Panel = () => { 
+type PanelProps = {
+    value: string;
+}
+
+export const Panel = ({ value }: PanelProps ) => { 
     return (
         <>
-            A child
+            {value}
         </>
     )
 }

@@ -5,7 +5,6 @@ type BoardProps = {
 }
 
 export const Board = ({ children }: BoardProps) => {
-    console.log(children, 'our children')
     return (
         <div>
             {children}
