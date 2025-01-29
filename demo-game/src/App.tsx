@@ -14,16 +14,19 @@ function App() {
 
   const [ panelsValues, setPanelsValues ] = useState(intialPanelValues)
   return (
-    <>
-      <Board>
-        {panelsValues.map(({ number }) => { 
-          return (
-            <Panel key={number} value={number} />
-          )
-        })}
-      </Board>
-      <button onClick={() => setPanelsValues(intialPanelValues)}>Reset Board</button>
-    </>
+    <div className="bg-[#16404D] w-full min-h-screen p-8">
+       {/* Wrapper */}
+      <div className="max-w-xl w-full mx-auto bg-[#DDA853] p-4">
+        <Board>
+          {panelsValues.map(({ number }) => { 
+            return (
+              <Panel key={number} value={number} />
+            )
+          })}
+        </Board> 
+        <button onClick={() => setPanelsValues(intialPanelValues)}>Reset Board</button>
+      </div>
+    </div>
   )
 }
 
