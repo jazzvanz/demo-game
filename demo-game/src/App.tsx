@@ -3,18 +3,48 @@ import { WiAlien, WiMoonrise } from "react-icons/wi";
 import { intialPanelValues, winningCombinations } from './constants/constants'
 import { Board } from './components/index'
 
-// - Add Icons
+// - Make Icons nice - attach more to player
+// jest test for winner
 // - Design Overall
 // Accessibilty use
-
+// <div aria-live="polite">{getStatusMessage()}</div>
 
 function App() {
   const [panelsValues, setPanelsValues] = useState(intialPanelValues);
   const [isPlayerX, setIsPlayerX] = useState(true);
 
+  const [winner, setWinner] = useState(false);
+
+  useEffect(() => {
+    if (!winner) return 
+    console.log('We have a Winner!')
+  }, [winner])
+
   useEffect(() => { 
-    // checkWinner();
-    console.log(winningCombinations)
+      // early exits
+      const selectedPanels = panelsValues.filter((panel) => { 
+        return panel.selected !== null
+      })
+      if (selectedPanels.length < 3) return
+      
+      const selectedByPlayerOne = selectedPanels.filter((panel) => {
+        return panel.selected === 'X'
+      })
+      const selectedByPlayerTwo = selectedPanels.filter((panel) => {
+        return panel.selected === 'Y'
+      })
+      if (selectedByPlayerOne.length < 3 && selectedByPlayerTwo.length < 3) return 
+    
+    // is there a winner?
+    // forEach or index not map
+    for (let i = 0; i < winningCombinations.length; i++) { 
+      const winningSet = winningCombinations[i]
+      const playerOne = selectedByPlayerOne.filter(({ number }) => winningSet.includes(number))
+      const playerTwo = selectedByPlayerOne.filter(({ number }) => winningSet.includes(number))
+
+      if (playerOne.length === 3) setWinner(true);
+      if (playerTwo.length === 3) setWinner(true);
+    }
   }, [panelsValues])
 
   const handleSelectPanel = (panelId: string, playerId: string | null) => { 
@@ -27,13 +57,10 @@ function App() {
     setIsPlayerX(!isPlayerX);
   }
 
-  // function checkWinner() { 
-  //   console.log('lets check the winenrs.')
-  // }
-
   const handleReset = () => { 
     setIsPlayerX(true);
     setPanelsValues(intialPanelValues);
+    setWinner(false);
   }
 
   return (
@@ -55,7 +82,7 @@ function App() {
                 aria-label="blank for now"
                 disabled={selected !== null }
                 className="bg-[#FBF5DD] shadow-lg hover:bg-[#FBF5DD]/60 focus:bg-[#FBF5DD]/60 active:bg-[#FBF5DD]/60 disabled:bg-[#FBF5DD]/60 rounded-md aspect-square">
-                  {selected}
+                {number} - {selected}
               </button> 
             )
           })}
