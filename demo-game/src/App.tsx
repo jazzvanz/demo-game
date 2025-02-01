@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
-import { WiAlien, WiMoonrise } from "react-icons/wi";
 import { intialPanelValues, winningCombinations } from './constants/constants'
 import { Board } from './components/index'
 
-// - Make Icons nice - attach more to player
-// jest test for winner
-// - Design Overall
+// Notify when its a draw/ no winner!
 // Accessibilty use
 // <div aria-live="polite">{getStatusMessage()}</div>
 
@@ -13,15 +10,17 @@ function App() {
   const [panelsValues, setPanelsValues] = useState(intialPanelValues);
   const [isPlayerX, setIsPlayerX] = useState(true);
 
-  const [winner, setWinner] = useState(false);
+  const [winner, setWinner] = useState<null | string>(null);
 
   useEffect(() => {
     if (!winner) return 
-    console.log('We have a Winner!')
+
+    if (confirm(`Player ${winner} won, Reset Game?`)) {
+      handleReset();
+    }
   }, [winner])
 
   useEffect(() => { 
-      // early exits
       const selectedPanels = panelsValues.filter((panel) => { 
         return panel.selected !== null
       })
@@ -35,19 +34,20 @@ function App() {
       })
       if (selectedByPlayerOne.length < 3 && selectedByPlayerTwo.length < 3) return 
     
-    // is there a winner?
-    // forEach or index not map
+
     for (let i = 0; i < winningCombinations.length; i++) { 
       const winningSet = winningCombinations[i]
+
       const playerOne = selectedByPlayerOne.filter(({ number }) => winningSet.includes(number))
       const playerTwo = selectedByPlayerOne.filter(({ number }) => winningSet.includes(number))
 
-      if (playerOne.length === 3) setWinner(true);
-      if (playerTwo.length === 3) setWinner(true);
+      if (playerOne.length === 3) setWinner('X');
+      if (playerTwo.length === 3) setWinner('Y');
     }
   }, [panelsValues])
 
   const handleSelectPanel = (panelId: string, playerId: string | null) => { 
+
     const updatedPanelsDetails = panelsValues.map((panel) => { 
       const updatedPanel = panel.number === panelId ? { number: panelId, selected: playerId } : panel;
       return updatedPanel
@@ -60,7 +60,7 @@ function App() {
   const handleReset = () => { 
     setIsPlayerX(true);
     setPanelsValues(intialPanelValues);
-    setWinner(false);
+    setWinner(null);
   }
 
   return (
@@ -70,7 +70,7 @@ function App() {
 
         {/* Player Tracker */}
         <div className="flex justify-center  p-6">
-          <h2>Turn: {isPlayerX ? <WiAlien /> : <WiMoonrise />}</h2>
+          <h2>Player Turn: Player {isPlayerX ? 'X' : 'Y'}</h2>
         </div>
 
         <Board>
@@ -79,7 +79,7 @@ function App() {
               <button
                 key={number}
                 onClick={() => handleSelectPanel(number, isPlayerX ? 'X' : 'Y')}
-                aria-label="blank for now"
+                aria-label={`Sqaure Number${Number}: ${selected ? 'selected by player' : 'available to select'}`}
                 disabled={selected !== null }
                 className="bg-[#FBF5DD] shadow-lg hover:bg-[#FBF5DD]/60 focus:bg-[#FBF5DD]/60 active:bg-[#FBF5DD]/60 disabled:bg-[#FBF5DD]/60 rounded-md aspect-square">
                 {number} - {selected}
