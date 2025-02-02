@@ -1,4 +1,4 @@
-type Panel = {
+export type Panel = {
   number: string;
   selected: string | null;
 };
